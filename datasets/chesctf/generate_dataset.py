@@ -87,58 +87,6 @@ def load_trs_trace(filename, number_of_traces, number_of_samples, data_length, n
     return samples, plaintexts, ciphertexts, keys
 
 
-def generate_opoi():
-    in_file = h5py.File(f'{dataset_folder_chesctf_nopoi}/ches_ctf_nopoi_window_20.h5', "r")
-    profiling_samples = np.array(in_file['Profiling_traces/traces'], dtype=np.float16)
-    attack_samples = np.array(in_file['Attack_traces/traces'], dtype=np.float16)
-    profiling_keys = in_file['Profiling_traces/metadata']['key']
-    attack_keys = in_file['Attack_traces/metadata']['key']
-    profiling_plaintexts = in_file['Profiling_traces/metadata']['plaintext']
-    attack_plaintexts = in_file['Attack_traces/metadata']['plaintext']
-    profiling_ciphertexts = in_file['Profiling_traces/metadata']['ciphertext']
-    attack_ciphertexts = in_file['Attack_traces/metadata']['ciphertext']
-
-    out_file = h5py.File(f'{dataset_folder_chesctf_opoi}/ches_ctf_opoi.h5', 'w')
-
-    n_profiling = 30000
-    n_attack = 10000
-
-    profiling_samples_opoi = np.zeros((len(profiling_samples), 4000))
-    attack_samples_opoi = np.zeros((len(attack_samples), 4000))
-
-    for i in range(len(profiling_samples)):
-        profiling_samples_opoi[i][:1000] = profiling_samples[i][:1000]
-        profiling_samples_opoi[i][1000:] = profiling_samples[i][12000:]
-
-    for i in range(len(attack_samples)):
-        attack_samples_opoi[i][:1000] = attack_samples[i][:1000]
-        attack_samples_opoi[i][1000:] = attack_samples[i][12000:]
-
-    profiling_traces_group = out_file.create_group("Profiling_traces")
-    attack_traces_group = out_file.create_group("Attack_traces")
-
-    profiling_traces_group.create_dataset(name="traces", data=profiling_samples_opoi, dtype=profiling_samples_opoi.dtype)
-    attack_traces_group.create_dataset(name="traces", data=attack_samples_opoi, dtype=attack_samples_opoi.dtype)
-
-    metadata_type_profiling = np.dtype([("plaintext", profiling_plaintexts[0].dtype, (16,)),
-                                        ("ciphertext", profiling_ciphertexts[0].dtype, (16,)),
-                                        ("key", profiling_keys[0].dtype, (16,))])
-    metadata_type_attack = np.dtype([("plaintext", attack_plaintexts[0].dtype, (16,)),
-                                     ("ciphertext", attack_ciphertexts[0].dtype, (16,)),
-                                     ("key", attack_keys[0].dtype, (16,))])
-
-    profiling_metadata = np.array([(profiling_plaintexts[n], profiling_ciphertexts[n], profiling_keys[n]) for n in range(n_profiling)],
-                                  dtype=metadata_type_profiling)
-    profiling_traces_group.create_dataset("metadata", data=profiling_metadata, dtype=metadata_type_profiling)
-
-    attack_metadata = np.array([(attack_plaintexts[n], attack_ciphertexts[n], attack_keys[n]) for n in range(n_attack)],
-                               dtype=metadata_type_attack)
-    attack_traces_group.create_dataset("metadata", data=attack_metadata, dtype=metadata_type_attack)
-
-    out_file.flush()
-    out_file.close()
-
-
 def generate_nopoi(window):
     n_traces_file = 10000
     n_profiling = 30000
