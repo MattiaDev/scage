@@ -1,0 +1,13 @@
+<features> ::= <convolution> | <pooling> | <batch-norm>
+<convolution> ::= layer:conv1d [num-filters,int,1,4,512] [filter-shape,int,1,2,80] [stride,int,1,30,50] <activation-function>
+<pooling> ::= <pool-type> [kernel-size,int,1,2,20] [stride,int,1,2,20]
+<pool-type> ::= layer:pool-avg1d | layer:pool-max1d
+<batch-norm> ::= layer:batch-norm
+<classification> ::= <fully-connected> | <dropout>
+<fully-connected> ::= layer:fc <activation-function> <regularizer> [num-units,int,1,10,400]
+<regularizer> ::= reg:l1 | reg:l2 | reg:none
+<dropout> ::= layer:dropout [rate,float,1,0.05,0.5]
+<activation-function> ::= act:relu | act:selu
+<output> ::= layer:fc act:softmax num-units:256
+<learning> ::= <optimizer> [lr,float,1,0.0001,0.001] [batch_size,int,1,100,1000] epochs:100
+<optimizer> ::= learning:adam | learning:rmsprop

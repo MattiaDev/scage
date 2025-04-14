@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scage"
+version = "0.0.1"
+dependencies = [
+  "numpy",
+  "scikit-learn",
+  "tensorflow",
+  "pyyaml",
+  "h5py",
+  "numba",
+]
+requires-python = ">=3.8,<3.11"
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+cluster = ["tensorflow==2.14.1"]
+laptop = ["tensorflow[and-cuda]==2.14.1"]
+latest = ["tensorflow[and-cuda]==2.18.1"]
+
+[project.scripts]
+scage = "scage.cli:scage_cli"
+scagetester = "scage.cli:scage_tester"
+scagetrainer = "scage.cli:scage_trainer"
+rs = "scage.random_search:random_search"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
